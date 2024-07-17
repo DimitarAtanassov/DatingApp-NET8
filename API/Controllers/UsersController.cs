@@ -1,21 +1,20 @@
 ﻿using API.Data;
 using API.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace API;
+namespace API.Controllers;
 
-[ApiController]
-[Route("api/[controller]")] //api/users ([controller] is replaced with the first part of our Controller class name so Users)
-
-//Primary constructor syntax
-public class UsersController(DataContext context) : ControllerBase
+//Primary constructor syntax (Constructor Dependancy injection) Route : api/users ([controller] is replaced with the first part of our Controller class name so Users)
+public class UsersController(DataContext context) : BaseApiController 
 {
     
 
-    // This Creats an HttpGet EndPoint, then we create a method that we will use to return http response to client (We are returning an ActionResult from our Api Endpoint that contains a collection)
+    
+    [AllowAnonymous] // Allows anonymous users to access this 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<AppUser>>> GetUsers()
+    public async Task<ActionResult<IEnumerable<AppUser>>> GetUsers()    // This Creats an HttpGet EndPoint, then we create a method that we will use to return http response to client (We are returning an ActionResult from our Api Endpoint that contains a collection)
     {
         // Gets List of users from Database
         var users = await context.Users.ToListAsync();
@@ -23,6 +22,7 @@ public class UsersController(DataContext context) : ControllerBase
         return users;   // Because we use ActionResult this will return an HTTP ok response (200) for return type of IEnumerable<AppUser>
     }
 
+    [Authorize]
     [HttpGet("{id:int}")]   // /api/users/3  Adding a route parameter id of type int
     public async Task<ActionResult<AppUser>> GetUser(int id)
     {
