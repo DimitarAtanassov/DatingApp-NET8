@@ -1,3 +1,27 @@
+// This is where we define routes for our app
 import { Routes } from '@angular/router';
+import { HomeComponent } from './home/home.component';
+import { MemberListComponent } from './members/member-list/member-list.component';
+import { MemberDetailComponent } from './members/member-detail/member-detail.component';
+import { ListsComponent } from './lists/lists.component';
+import { MessagesComponent } from './messages/messages.component';
+import { authGuard } from './_guards/auth.guard';
 
-export const routes: Routes = [];
+export const routes: Routes = [
+    {path: '', component: HomeComponent},
+    
+    // Dummy Route so we do not need to set canActivate on every route we want to be protected on our site, this will apply auth gaurd to all the routes in children array
+    {
+        path: '',
+        runGuardsAndResolvers: 'always',
+        canActivate: [authGuard],
+        children: [
+            {path: 'members', component: MemberListComponent},
+            {path: 'members/[:id]', component: MemberDetailComponent}, // Dynamic Route (bc of [:id])
+            {path: 'lists', component: ListsComponent},
+            {path: 'messages', component: MessagesComponent}
+        ]
+    },
+
+    {path: '**', component: HomeComponent, pathMatch: 'full'}  // Wildcard route, if none of the routes match this one will run, reccommend to use pathMatch = full in wildcard routes
+];

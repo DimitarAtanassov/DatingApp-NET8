@@ -9,11 +9,11 @@ namespace API.Services;
 
 public class TokenService(IConfiguration config) : ITokenService
 {
-    // Logic for create a JWB Token for our user when they login or register
+    // Logic for creating a JWT for our user when they login or register
     public string CreateToken(AppUser user)
     {
         var tokenKey = config["TokenKey"] ?? throw new Exception("Cannot Access tokenKey from appsetings");
-        // ecurityAlgorithms.HmacSha512Signature this signature requires a length greater than 64
+        // securityAlgorithms.HmacSha512Signature this signature requires a length greater than 64
         if (tokenKey.Length < 64) throw new Exception("Your tokenKey needs to be longer");
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenKey));
 
