@@ -1,3 +1,4 @@
+using API;
 using API.Extensions;
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,7 +9,9 @@ builder.Services.AddIdentityServices(builder.Configuration);
 
 var app = builder.Build();
 
-// MIDDLEWARE START (!Ordering of middleware is important)
+// MIDDLEWARE START (!!!!!!Ordering of middleware is important)
+// Error/Exception Handling Middleware needs to go at the very top
+app.UseMiddleware<ExceptionMiddleware>();
 // Cross Origin Resource Sharing middleware  so we can run our app locally on HTTPS
 app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().
 WithOrigins("http://localhost:4200","https://localhost:4200"));

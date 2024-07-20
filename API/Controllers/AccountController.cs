@@ -12,7 +12,7 @@ namespace API.Controllers;
 // Primary constructor dependancy injectiion + inheritance
 public class AccountController(DataContext context, ITokenService tokenService) : BaseApiController
 {
-    [HttpPost("register")] // account/register
+    [HttpPost("register")] // api/account/register: api/ comes from BaseApiController; /account/ comes from this controller, register is the final portion which we set in HttpPost attribute
     // The Properties of what ever Our Task<ActionResult<>> wraps is what is returned in our http request because of our return statement
     public async Task<ActionResult<UserDto>> Register(RegisterDto registerDto)
     {
