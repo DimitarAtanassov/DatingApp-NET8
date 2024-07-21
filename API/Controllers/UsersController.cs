@@ -1,36 +1,35 @@
 ﻿using API.Data;
+using API.DTOs;
 using API.Entities;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers;
 
+[Authorize] // All endpoints in this controller are now authenticated / protected endpoints
 //Primary constructor syntax (Constructor Dependancy injection) Route : api/users ([controller] is replaced with the first part of our Controller class name so Users), we inherit from BaseApi controller that wehre api/ comes from
-public class UsersController(DataContext context) : BaseApiController 
+public class UsersController(IUserRepository userRepository) : BaseApiController 
 {
-    
-
-    
-    [AllowAnonymous] // Allows anonymous users to access this 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<AppUser>>> GetUsers()    // This Creats an HttpGet EndPoint, then we create a method that we will use to return http response to client (We are returning an ActionResult from our Api Endpoint that contains a collection)
+    public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers()    // This Creats an HttpGet EndPoint, then we create a method that we will use to return http response to client (We are returning an ActionResult from our Api Endpoint that contains a collection)
     {
         // Gets List of users from Database
-        var users = await context.Users.ToListAsync();
-        
-        return users;   // Because we use ActionResult this will return an HTTP ok response (200) for return type of IEnumerable<AppUser>
+        var users = await userRepository.GetMembersAsync();
+
+        return Ok(users);  
     }
 
-    [Authorize]
-    [HttpGet("{id:int}")]   // /api/users/3  Adding a route parameter id of type int
-    public async Task<ActionResult<AppUser>> GetUser(int id)
+    [HttpGet("{username}")]   // api/users/username  Adding a route parameter username of type string
+    public async Task<ActionResult<MemberDto>> GetUser(string username)
     {
         
-        var user = await context.Users.FindAsync(id);
+        var user = await userRepository.GetMemberAsync(username);
         
         if (user == null) return NotFound(); // 404 Not Found
-        return user; 
+        
+        return user;
     }
 
 }

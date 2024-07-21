@@ -23,6 +23,8 @@ public static class ApplicationServiceExtensions
         // Setting up ITokenSerivce(A service we created) for dependancy injection
         // Common practice to pass in interface and implementation class for service (provides high level abstraction and decoupling)
         services.AddScoped<ITokenService, TokenService>();
+        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
         return services;
     }

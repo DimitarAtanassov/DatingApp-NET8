@@ -11,7 +11,7 @@ namespace API;
 // IHostEnvironment is used to see if we are running in production or development mode
 public class ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger, IHostEnvironment env)
 {
-    // When we are using middleware we have to have a method named InvokeAsync b/c that is what is being expected when we call the next() method in the Middleware pipeline wirh WebApplications (As per microsft.com)
+    // When we are using middleware we have to have a method named InvokeAsync b/c that is what is being expected when we call the next() method in the Middleware pipeline with WebApplications (As per microsft.com)
     // This function is middleware and we are working with the HTTP request so we have access to the HttpContext (which is the request object)
     public async Task InvokeAsync(HttpContext context)  
     {

@@ -16,6 +16,7 @@ export class AccountService {
 
   login(model: any) {
     // .post<User> gives our post request a User return type
+    // the model param is the body of the request
     return this.http.post<User>(this.baseUrl + 'account/login',model).pipe(
       map(user => {
         if (user) {
