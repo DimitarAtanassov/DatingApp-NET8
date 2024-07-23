@@ -20,7 +20,7 @@ export const routes: Routes = [
         canActivate: [authGuard],
         children: [
             {path: 'members', component: MemberListComponent},
-            {path: 'members/[:id]', component: MemberDetailComponent}, // Dynamic Route (bc of [:id])
+            {path: 'members/:username', component: MemberDetailComponent}, // Dynamic Route (bc of :username)
             {path: 'lists', component: ListsComponent},
             {path: 'messages', component: MessagesComponent}
         ]
