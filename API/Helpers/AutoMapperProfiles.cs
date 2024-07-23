@@ -12,6 +12,7 @@ public class AutoMapperProfiles : Profile
     public AutoMapperProfiles()
     {
         // CreateMap<MapFrom,MapTo>();
+
         // .ForMember(DestinationMember, WhereToMapFrom)
         // dest => dest.PhotoUrl: Specifies that the PhotoUrl property of the destination (MemberDto) is being configured.
         // o.MapFrom(s => s.Photos.FirstOrDefault(x => x.IsMain)!.Url): Specifies the custom mapping logic for the PhotoUrl property
@@ -23,7 +24,7 @@ public class AutoMapperProfiles : Profile
             .ForMember(dest => dest.PhotoUrl, o => 
             o.MapFrom(s => s.Photos.FirstOrDefault(x=>x.IsMain)!.Url));
         CreateMap<Photo,PhotoDto>();
-
+        CreateMap<MemberUpdateDto, AppUser>();
         // Workflow: first start with the basic create maps, and check for the mappings
         // If there is any gaps then we can come back and configure it to map the properties we are missing
     }

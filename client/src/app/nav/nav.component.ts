@@ -21,6 +21,7 @@ export class NavComponent {
   
   // login returns an observable, observabales are lazy so we need to subscribe to them because if no one is listening, nothing will happen
   // Once you subscribe to an observable you can tell it what to do 'next', what to do on 'error', and what to do when it is completed '()'
+  // Subscribing to an observable triggers the execution of the underlying HTTP request
   login() {
     this.accountService.login(this.model).subscribe({
       next: () => {

@@ -29,7 +29,7 @@
             Welcome {{accountService.currentUser()?.username | titlecase}}
           </a>
           <div *dropdownMenu class="dropdown-menu">
-            <a class="dropdown-item">Edit Profile</a>
+            <a routerLink="/member/edit" class="dropdown-item">Edit Profile</a>
             <div class="dropdown-divider"></div>
             <a class="dropdown-item" (click)="logout()">Logout</a>
           </div>
@@ -39,7 +39,9 @@
       @if (!accountService.currentUser()) 
       {
         <form #loginForm="ngForm" (ngSubmit)="login()" class="d-flex" autocomplete="off">
-          <!-- 2 way binding (ngModel)] can recieve data from component and can also send data from template -->
+          <!-- 2 way binding (ngModel)] can recieve data from component and can also send data from template 
+              name="username" and [(ngModel)] = 'model.username' the name and ngmodel object property need to match 
+          -->
            <input name="username" 
            [(ngModel)]="model.username" 
            class="form-control me-2" 
