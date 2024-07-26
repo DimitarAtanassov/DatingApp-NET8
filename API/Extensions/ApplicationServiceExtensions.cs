@@ -24,8 +24,9 @@ public static class ApplicationServiceExtensions
         // Common practice to pass in interface and implementation class for service (provides high level abstraction and decoupling)
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IPhotoService, PhotoService>();
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-
+        services.Configure<CloudinarySettings>(config.GetSection("CloudinarySettings"));
         return services;
     }
 }

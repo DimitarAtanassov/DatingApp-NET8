@@ -5,11 +5,12 @@ import { MembersService } from '../../_services/members.service';
 import { TabsModule } from 'ngx-bootstrap/tabs';
 import { FormsModule, NgForm } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
+import { PhotoEditorComponent } from "../photo-editor/photo-editor.component";
 
 @Component({
   selector: 'app-member-edit',
   standalone: true,
-  imports: [TabsModule, FormsModule],
+  imports: [TabsModule, FormsModule, PhotoEditorComponent],
   templateUrl: './member-edit.component.html',
   styleUrl: './member-edit.component.css'
 })
@@ -23,6 +24,8 @@ export class MemberEditComponent implements OnInit {
   } // We are adding this here because the deactive route gaurd only works with angular routes and if a user has made unsaved changes to their profile and tries to go to another page on our angular app
   // They will be asked for conformation via our alert, but if the user goes to google.com for example the gaurd wont work
   // So we have this here to warn to user when their browser emits an event which it will if they try to go back to their browser homepage, so they get warned they are leaving with unsaved changes
+ 
+ 
   member?:Member;
   private accountService = inject(AccountService);
   private memberService = inject(MembersService);
@@ -43,6 +46,7 @@ export class MemberEditComponent implements OnInit {
 
   updateMember()
   {
+    
     this.memberService.updateMember(this.editForm?.value).subscribe({
       next: _ => {
         
@@ -51,6 +55,11 @@ export class MemberEditComponent implements OnInit {
       }
     })
 
+  }
+
+  onMemberChange(event: Member)
+  {
+    this.member = event;
   }
 
 }
