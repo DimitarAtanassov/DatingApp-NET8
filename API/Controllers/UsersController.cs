@@ -79,6 +79,8 @@ public class UsersController(IUserRepository userRepository, IMapper mapper, IPh
             PublicId = result.PublicId
         };
 
+        if (user.Photos.Count == 0) photo.IsMain = true;
+
         // Adding to the user.Photos Property which is of type List<Photo>; so we are adding the photo to the user's photolist
         user.Photos.Add(photo);
 

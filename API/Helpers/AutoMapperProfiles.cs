@@ -25,8 +25,12 @@ public class AutoMapperProfiles : Profile
             o.MapFrom(s => s.Photos.FirstOrDefault(x=>x.IsMain)!.Url));
         CreateMap<Photo,PhotoDto>();
         CreateMap<MemberUpdateDto, AppUser>();
+        CreateMap<RegisterDto,AppUser>();
         // Workflow: first start with the basic create maps, and check for the mappings
         // If there is any gaps then we can come back and configure it to map the properties we are missing
+
+        // Mapping from string to DateOnly, because we are passing the date as a string from client which will cause an auto mapper error when we try to map RegisterDto to AppUser
+        CreateMap<string,DateOnly>().ConvertUsing(s => DateOnly.Parse(s));  // s is the date string.
     }
 
 }

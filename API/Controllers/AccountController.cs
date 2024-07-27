@@ -6,11 +6,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using API.DTOs;
 using API.Interfaces;
+using AutoMapper;
 
 namespace API.Controllers;
 
 // Primary constructor dependancy injectiion + inheritance
-public class AccountController(DataContext context, ITokenService tokenService) : BaseApiController
+public class AccountController(DataContext context, ITokenService tokenService, IMapper mapper) : BaseApiController
 {
     [HttpPost("register")] // api/account/register: api/ comes from BaseApiController; /account/ comes from this controller, register is the final portion which we set in HttpPost attribute
     // The Properties of what ever Our Task<ActionResult<>> wraps is what is returned in our http request because of our return statement
@@ -18,24 +19,25 @@ public class AccountController(DataContext context, ITokenService tokenService) 
     public async Task<ActionResult<UserDto>> Register(RegisterDto registerDto)
     {
         if (await UserExists(registerDto.Username)) return BadRequest("Username is taken");
-        return Ok();
-        // using var hmac = new HMACSHA512();
+        using var hmac = new HMACSHA512();
 
-        // var user = new AppUser
-        // {
-        //     UserName = registerDto.Username.ToLower(),
-        //     PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password)),
-        //     PasswordSalt = hmac.Key
-        // };
+        // Using automapper to create new user with registerDto info
+        var user = mapper.Map<AppUser>(registerDto);    // Map into AppUser from registerDto
 
-        // context.Users.Add(user);
-        // await context.SaveChangesAsync();
+        // Setting the registerDto making username lower case in user object and registerDto does not have PasswordHash and PasswordSalt so we are setting them 
+        user.UserName = registerDto.Username.ToLower();
+        user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password));
+        user.PasswordSalt = hmac.Key;
 
-        // return new UserDto
-        // {
-        //     Username = user.UserName,
-        //     Token = tokenService.CreateToken(user)
-        // };
+        context.Users.Add(user);
+        await context.SaveChangesAsync();
+
+        return new UserDto
+        {
+            Username = user.UserName,
+            Token = tokenService.CreateToken(user),
+            KnownAs = user.KnownAs
+        };
         
     }
 
@@ -61,6 +63,7 @@ public class AccountController(DataContext context, ITokenService tokenService) 
         return new UserDto
         {
             Username = user.UserName,
+            KnownAs = user.KnownAs,
             Token = tokenService.CreateToken(user),
             PhotoUrl = user.Photos.FirstOrDefault(x => x.IsMain = true)?.Url
         };
