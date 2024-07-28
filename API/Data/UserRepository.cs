@@ -1,6 +1,7 @@
 ﻿using API.Data;
 using API.DTOs;
 using API.Entities;
+using API.Helpers;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
@@ -18,11 +19,41 @@ public class UserRepository(DataContext context, IMapper mapper) : IUserReposito
             .SingleOrDefaultAsync();    //Returns the mapped to memberDto if a matching username is found else will return null
     }
 
-    public async Task<IEnumerable<MemberDto>> GetMembersAsync()
+    public async Task<PagedList<MemberDto>> GetMembersAsync(UserParams userParams)
     {
-        return await context.Users
-            .ProjectTo<MemberDto>(mapper.ConfigurationProvider)
-            .ToListAsync();
+        // Deferred Execution: Query is not executed immeditaly but is constructed as an expression tree, query only gets executed when the results are enumerated 
+        // Start with all users as an IQueryable
+        var query = context.Users.AsQueryable();   // query needs to be of type Queryable if we want to use a where clause
+
+        // Filter out the current user
+        query = query.Where(x => x.UserName != userParams.CurrentUser);
+
+        // Add gender filtering to query if it exists
+        if (userParams.Gender != null)
+        {
+            query = query.Where(x => x.Gender == userParams.Gender); 
+        }
+
+        // Age Filtering:
+        // If someone was 100, the minDob of someone who is 100 years old in 2024 would be, 1924 
+        var minDob = DateOnly.FromDateTime(DateTime.Today.AddYears(-userParams.MaxAge - 1));    // Adding a neg number = subtraction, -1 if the user hasn't had their bday yet this year
+        var maxDob = DateOnly.FromDateTime(DateTime.Today.AddYears(-userParams.MinAge));
+
+        // Add age filter to query
+        query = query.Where(x=> x.DateOfBirth >= minDob && x.DateOfBirth <= maxDob);
+
+        // Add sorting to query
+        query = userParams.OrderBy switch
+        {
+            // if userParams.OrderBy == "created" our query will sort by the created property, else it will sort by the LastActive Property
+            "created" => query.OrderByDescending(x => x.Created),
+             _ => query.OrderByDescending(x => x.LastActive)
+        };
+
+
+        
+        // Project the filtered query (.CreateAsync is what actually executes our query) to MemberDto and created a paginated list
+        return await PagedList<MemberDto>.CreateAsync(query.ProjectTo<MemberDto>(mapper.ConfigurationProvider), userParams.PageNumber, userParams.PageSize);
     }
 
     public async Task<AppUser?> GetUserByIdAsync(int id)

@@ -14,10 +14,15 @@ namespace API.Controllers;
 public class UsersController(IUserRepository userRepository, IMapper mapper, IPhotoService photoService) : BaseApiController 
 {
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers()    // This Creats an HttpGet EndPoint, then we create a method that we will use to return http response to client (We are returning an ActionResult from our Api Endpoint that contains a collection)
+    // We use [FromQuery], bc by default if we pass in paramters to the method that is connected to an endpoint, the endpoint will check the body of the request for the parameters it needs.
+    public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers([FromQuery]UserParams userParams)    // This Creats an HttpGet EndPoint, then we create a method that we will use to return http response to client (We are returning an ActionResult from our Api Endpoint that contains a collection)
     {
+        userParams.CurrentUser = User.GetUsername();
         // Gets List of users from Database
-        var users = await userRepository.GetMembersAsync();
+        var users = await userRepository.GetMembersAsync(userParams);
+
+        // Adding pagination header to our resposne
+        Response.AddPaginationHeader(users);
 
         return Ok(users);  
     }
