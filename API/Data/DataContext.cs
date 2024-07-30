@@ -8,6 +8,7 @@ public class DataContext(DbContextOptions options) : DbContext(options)
 {
     public DbSet<AppUser> Users { get; set; }
     public DbSet<UserLike> Likes { get; set; }  // This is a relationship table we are configuring for EF, rather than EF configuring for us, we need to give it some config
+    public DbSet<Message> Messages { get; set; }
 
     // Overriding Entity Framework conventions:
     protected override void OnModelCreating(ModelBuilder builder)  // When we create a migration, it takes a look at this configuration
@@ -30,6 +31,16 @@ public class DataContext(DbContextOptions options) : DbContext(options)
         .WithMany(l => l.LikedByUsers)
         .HasForeignKey(s => s.TargetUserId)
         .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Entity<Message>()
+        .HasOne(x => x.Recipient)
+        .WithMany(x => x.MessagesReceived)
+        .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Entity<Message>()
+        .HasOne(x => x.Sender)
+        .WithMany(x => x.MessagesSent)
+        .OnDelete(DeleteBehavior.Restrict);
     }
 
     /*
@@ -48,7 +59,6 @@ public class DataContext(DbContextOptions options) : DbContext(options)
         But if we do not specify DbSets for our Entities, Entity Framework will use the Entity Name as the table name, so if we didn't have a DbSet for AppUser called Users the table name would be AppUser
         For Photos since we do not have a DbSet it will use the class name for our photo entity which is Photo, but we want the names of our tables to be plural.
         When conventions don't work for us we can use attributes or annotations to tell Entity Framework what we want
-
     */
 
 }

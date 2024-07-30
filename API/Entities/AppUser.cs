@@ -23,6 +23,8 @@ public class AppUser
     public List<Photo> Photos { get; set; } = []; // This is refered to as Navigation Property
     public List<UserLike> LikedByUsers { get; set; } = []; //List of users the current user is liked by
     public List<UserLike> LikedUsers { get; set; } = [];    //List of users the current user has liked
+    public List<Message> MessagesSent { get; set; } = [];
+    public List<Message> MessagesReceived { get; set; } = [];
     
     /*
 

@@ -11,6 +11,7 @@ import { NotFoundComponent } from './errors/not-found/not-found.component';
 import { ServerErrorComponent } from './errors/server-error/server-error.component';
 import { MemberEditComponent } from './members/member-edit/member-edit.component';
 import { preventUnsavedChagesGuard } from './_guards/prevent-unsaved-chages.guard';
+import { memberDetailedResolver } from './_resolvers/member-detailed.resolver';
 
 export const routes: Routes = [
     {path: '', component: HomeComponent},
@@ -22,7 +23,8 @@ export const routes: Routes = [
         canActivate: [authGuard],
         children: [
             {path: 'members', component: MemberListComponent},
-            {path: 'members/:username', component: MemberDetailComponent}, // Dynamic Route (bc of :username)
+            {path: 'members/:username', component: MemberDetailComponent, 
+                resolve: {member: memberDetailedResolver}}, // Dynamic Route (bc of :username)
             {path: 'member/edit', component: MemberEditComponent, canDeactivate: [preventUnsavedChagesGuard]},
             {path: 'lists', component: ListsComponent},
             {path: 'messages', component: MessagesComponent}
