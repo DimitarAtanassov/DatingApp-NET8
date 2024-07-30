@@ -21,21 +21,20 @@ public class AppUser
     public required string City { get; set; }
     public required string Country { get; set; }
     public List<Photo> Photos { get; set; } = []; // This is refered to as Navigation Property
+    public List<UserLike> LikedByUsers { get; set; } = []; //List of users the current user is liked by
+    public List<UserLike> LikedUsers { get; set; } = [];    //List of users the current user has liked
+    
     /*
+
     We have a list of Photos in our AppUser Entity, A Photo is another Entity
     Entity Framework by conventions is automatically going to recognize this as a realtionship between our AppUser and Our Photos
     (in db terminology) One User can have many photos , this is called a one to many realtionship
     Entity Framework will recognize this and by convention it will create a database table for our Photos as well.
 
     We can say Photos is a navigation property inside of our AppUser class
-    Navigation Property: A property in an entity class taht allows navigation from one entity to another.
+    Navigation Property: A property in an entity class that allows navigation from one entity to another.
 
     */
-
-    // public int GetAge()
-    // {
-    //     return DateOfBirth.CalculateAge();
-    // }
 
 
 }
