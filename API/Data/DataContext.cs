@@ -1,12 +1,17 @@
 ﻿using API.Entities;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Data;
 
 
-public class DataContext(DbContextOptions options) : DbContext(options)
+public class DataContext(DbContextOptions options) : IdentityDbContext<AppUser,AppRole, int, 
+    IdentityUserClaim<int>, AppUserRole, IdentityUserLogin<int>, IdentityRoleClaim<int>,
+    IdentityUserToken<int>>(options)
 {
-    public DbSet<AppUser> Users { get; set; }
+    // IdentityDbContext comes with a DbSet for our users so we do not need this.
+    // public DbSet<AppUser> Users { get; set; }
     public DbSet<UserLike> Likes { get; set; }  // This is a relationship table we are configuring for EF, rather than EF configuring for us, we need to give it some config
     public DbSet<Message> Messages { get; set; }
 
@@ -14,6 +19,22 @@ public class DataContext(DbContextOptions options) : DbContext(options)
     protected override void OnModelCreating(ModelBuilder builder)  // When we create a migration, it takes a look at this configuration
     {
         base.OnModelCreating(builder);
+
+        /*
+            We need to configure our relationship between the AppUser, AppRole, AppUserRole 
+            This will be a 1 to many relationship b/c a user can have many roles and a role can have many users inside it
+        */
+        builder.Entity<AppUser>()
+            .HasMany(ur => ur.UserRoles)
+            .WithOne(u => u.User)
+            .HasForeignKey(ur => ur.UserId)
+            .IsRequired();
+        
+        builder.Entity<AppRole>()
+            .HasMany(ur => ur.UserRoles)
+            .WithOne(u => u.Role)
+            .HasForeignKey(ur => ur.RoleId)
+            .IsRequired();
 
         // Configure Below
         builder.Entity<UserLike>()
@@ -41,6 +62,8 @@ public class DataContext(DbContextOptions options) : DbContext(options)
         .HasOne(x => x.Sender)
         .WithMany(x => x.MessagesSent)
         .OnDelete(DeleteBehavior.Restrict);
+
+
     }
 
     /*

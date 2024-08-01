@@ -1,7 +1,7 @@
 // Services are singletons and are created when our application starts
 // Good place to store states and HTTP requests
 import { HttpClient } from '@angular/common/http';
-import { Injectable, inject, signal } from '@angular/core';
+import { Injectable, computed, inject, signal } from '@angular/core';
 import { User } from '../_models/user';
 import { map } from 'rxjs';
 import { environment } from '../../environments/environment';
@@ -16,6 +16,17 @@ export class AccountService {
   private likeService = inject(LikesService);
   baseUrl =  environment.apiUrl;
   currentUser = signal<User | null>(null); // currentUser inital value is set to null bc of the (null)
+  
+  // Computed signal based on the current value of currentUser signal.
+  roles = computed(() => {
+    const user = this.currentUser();
+    if (user && user.token)
+    {
+      const role = JSON.parse(atob(user.token.split('.')[1])).role;
+      return Array.isArray(role) ? role : [role];
+    }
+    return [null];
+  })
 
   login(model: any) {
     // .post<User> gives our post request a User return type

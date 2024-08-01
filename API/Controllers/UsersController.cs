@@ -13,7 +13,8 @@ namespace API.Controllers;
 [Authorize] // All endpoints in this controller are now authenticated / protected endpoints
 //Primary constructor syntax (Constructor Dependancy injection) Route : api/users ([controller] is replaced with the first part of our Controller class name so Users), we inherit from BaseApi controller that wehre api/ comes from
 public class UsersController(IUserRepository userRepository, IMapper mapper, IPhotoService photoService) : BaseApiController 
-{
+{   
+    //[Authorize(Roles = "Admin")] // Only users with Admin role will be able to access GetUsers endpoint, Adding this temporarily to make sure our roles are working 
     [HttpGet]
     // We use [FromQuery], bc by default if we pass in paramters to the method that is connected to an endpoint, the endpoint will check the body of the request for the parameters it needs.
     public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers([FromQuery]UserParams userParams)    // This Creats an HttpGet EndPoint, then we create a method that we will use to return http response to client (We are returning an ActionResult from our Api Endpoint that contains a collection)
@@ -28,6 +29,7 @@ public class UsersController(IUserRepository userRepository, IMapper mapper, IPh
         return Ok(users);  
     }
 
+    //[Authorize(Roles = "Member")] // Only users with Member role will be able to access GetUser endpoint, Adding this temporarily to make sure our roles are working 
     [HttpGet("{username}")]   // api/users/username  Adding a route parameter username of type string
     public async Task<ActionResult<MemberDto>> GetUser(string username)
     {

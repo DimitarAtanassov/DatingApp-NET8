@@ -1,6 +1,8 @@
 using API;
 using API.Data;
+using API.Entities;
 using API.Extensions;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,8 +36,10 @@ var services = scope.ServiceProvider; // Used to reslove the required services f
 try
 {
     var context = services.GetRequiredService<DataContext>();  //Getting the DataContexet service 
+    var userManager = services.GetRequiredService<UserManager<AppUser>>();
+    var roleManager = services.GetRequiredService<RoleManager<AppRole>>();
     await context.Database.MigrateAsync();  // Applies migrations and creates database if it hasn't been created already
-    await Seed.SeedUsers(context);
+    await Seed.SeedUsers(userManager, roleManager);
 }
 catch (Exception ex)
 {
